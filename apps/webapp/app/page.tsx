@@ -1,5 +1,6 @@
 'use client'
 
+import FeatureSteps from '@/components/FeatureSteps'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { motion } from 'framer-motion'
@@ -14,7 +15,40 @@ export default function Home() {
 	const now = new Date().getTime()
 	const distance = launchDate - now
 	const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-
+	const stepsData = [
+		{
+			stepNumber: 1,
+			title: 'Game Visibility',
+			description: 'Showcase your game to a passionate and growingStellar community.',
+		},
+		{
+			stepNumber: 2,
+			title: 'Community Insights',
+			description:
+				'Leverage real-time reviews,ratings, and user feedback to refine your game and boost player satisfaction.',
+		},
+		{
+			stepNumber: 3,
+			title: 'Reputation Building',
+			description:
+				'Utilize Arcadis features like community votes, tutorials, and achievements to establish your game as a trusted and popular title.',
+		},
+		{
+			stepNumber: 4,
+			title: 'Crowdfunding',
+			description:
+				'Access crowdfunding tools like new integration to fund game updates or new features while gaining community support.',
+		},
+		{
+			stepNumber: 5,
+			title: 'Growth and Promotion',
+			description:
+				'Increase player acquisition, retention, and in-game engagement while leveraging the platform to promote your game effectively.',
+		},
+	]
+	const handleCtaClick = () => {
+		console.log('CTA Clicked!')
+	}
 	return (
 		<main className="min-h-screen relative overflow-hidden bg-[#070B1D]">
 			{/* Background gradient */}
@@ -109,7 +143,7 @@ export default function Home() {
 						</div>
 					))}
 				</motion.div>
-
+				<FeatureSteps steps={stepsData} ctaText="Register Your Game" onCtaClick={handleCtaClick} />
 				{/* Social links */}
 				<motion.div
 					initial={{ opacity: 0 }}
