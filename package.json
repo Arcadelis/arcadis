@@ -27,7 +27,11 @@
 		"prepare": "[ \"$VERCEL\" != \"1\" ] && husky install || echo \"Skipping husky install\""
 	},
 	"workspaces": {
-		"packages": ["apps/*", "services/*", "packages/*"],
+		"packages": [
+			"apps/*",
+			"services/*",
+			"packages/*"
+		],
 		"nohoist": [
 			"**/cbw-sdk",
 			"**/cbw-sdk/**",
@@ -38,5 +42,8 @@
 		]
 	},
 	"module": "index.ts",
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@headlessui/react": "^2.2.0"
+	}
 }
