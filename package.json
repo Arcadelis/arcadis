@@ -6,7 +6,8 @@
 		"@commitlint/cli": "^19.6.1",
 		"@commitlint/config-conventional": "^19.6.0",
 		"@types/bun": "latest",
-		"husky": "^9.1.7"
+		"husky": "^9.1.7",
+		"prettier": "^3.5.2"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
@@ -36,5 +37,10 @@
 			"**/pino-pretty/**"
 		]
 	},
-	"dependencies": {}
+	"module": "index.ts",
+	"type": "module",
+	"dependencies": {
+		"@fontsource/inter": "^5.2.5",
+		"@headlessui/react": "^2.2.0"
+	}
 }
