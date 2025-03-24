@@ -40,6 +40,7 @@
 	"module": "index.ts",
 	"type": "module",
 	"dependencies": {
+		"@fontsource/inter": "^5.2.5",
 		"@headlessui/react": "^2.2.0"
 	}
 }
