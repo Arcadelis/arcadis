@@ -1,23 +1,24 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Menu, X, ChevronDown, ChevronUp } from 'lucide-react'
-import { useMenu } from '@/context/MenuContext'
+import Link from "next/link"
+import { cn } from "@/lib/utils"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { Menu, X, ChevronDown, ChevronUp } from "lucide-react"
+import { useMenu } from "@/context/MenuContext"
 import { WalletConnectButton } from "@/components/WalletConnectButton"
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Games', href: '/games' },
-  { name: 'News', href: '/news' },
-  { name: 'Community', href: '/community' }
+  { name: "Home", href: "/" },
+  { name: "Games", href: "/games" },
+  { name: "Governance", href: "/governance" }, // Added governance link
+  { name: "News", href: "/news" },
+  { name: "Community", href: "/community" },
 ]
 
 const awardOptions = [
-  { name: 'Hall of Fame', href: '/awards/halloffame' },
-  { name: 'Monthly Award', href: '/awards/monthlyaward' },
-  { name: 'Nominations', href: '/awards/nominations' }
+  { name: "Hall of Fame", href: "/awards/halloffame" },
+  { name: "Monthly Award", href: "/awards/monthlyaward" },
+  { name: "Nominations", href: "/awards/nominations" },
 ]
 
 export function Header() {
@@ -32,14 +33,9 @@ export function Header() {
             <DropdownMenu.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenu.Trigger asChild>
                 <button className="p-2 text-white hover:bg-white/5 rounded-md transition-colors">
-                  {isMenuOpen ? (
-                    <X className="h-6 w-6" />
-                  ) : (
-                    <Menu className="h-6 w-6" />
-                  )}
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
               </DropdownMenu.Trigger>
-
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
                   className="w-screen bg-[#13163A] py-4 shadow-lg border-b border-white/10"
@@ -57,21 +53,15 @@ export function Header() {
                         </Link>
                       </DropdownMenu.Item>
                     ))}
-                    
                     {/* Awards Menu Mobile */}
                     <div className="space-y-1">
-                      <button 
+                      <button
                         onClick={() => setIsAwardsOpen(!isAwardsOpen)}
                         className="flex w-full items-center justify-between px-3 py-2 text-[13.67px] leading-[20px] font-medium text-white hover:text-white/90 hover:bg-white/5 rounded-md transition-colors tracking-[0%]"
                       >
                         <span>Awards</span>
-                        {isAwardsOpen ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
+                        {isAwardsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </button>
-                      
                       {isAwardsOpen && (
                         <div className="pl-4 space-y-1 border-l border-white/10 ml-3">
                           {awardOptions.map((option) => (
@@ -96,7 +86,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center w-[100px] md:w-auto justify-center md:justify-start">
             <Link href="/" className="text-2xl font-bold text-white">
-              
+              Arcadelis
             </Link>
           </div>
 
@@ -107,14 +97,13 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'text-[13.67px] leading-[20px] font-medium text-white hover:text-white/90 transition-colors tracking-[0%] text-center',
-                  'px-3 py-2 rounded-md'
+                  "text-[13.67px] leading-[20px] font-medium text-white hover:text-white/90 transition-colors tracking-[0%] text-center",
+                  "px-3 py-2 rounded-md",
                 )}
               >
                 {item.name}
               </Link>
             ))}
-            
             {/* Awards Dropdown Desktop */}
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
@@ -123,7 +112,6 @@ export function Header() {
                   <span className="text-xs">▾</span>
                 </button>
               </DropdownMenu.Trigger>
-
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
                   className="min-w-[160px] bg-[#13163A] rounded-lg p-1 shadow-lg border border-white/10"
@@ -153,4 +141,4 @@ export function Header() {
       </nav>
     </header>
   )
-} 
+}
