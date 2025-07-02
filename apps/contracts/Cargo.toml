@@ -1,7 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-  "contracts/*",
+  "contracts/asset-registry",
+  "contracts/game-review",
+  "contracts/game_state_management",
+  "contracts/marketplace-contract",
+  "contracts/player-identity-auth",
+  "contracts/voting-contract",
 ]
 
 [workspace.dependencies]
