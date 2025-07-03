@@ -1,0 +1,19 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+soroban-sdk = "23.0.0-rc.1.1"
+wee_alloc = "0.4"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "z"
