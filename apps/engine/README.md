@@ -25,6 +25,7 @@ cd apps/engine
 ```
 
 The script will automatically:
+
 1. Install Rust via rustup (if not already installed)
 2. Install Soroban CLI via cargo (if not already installed)
 3. Add the wasm32-unknown-unknown target for WebAssembly compilation
@@ -35,21 +36,25 @@ The script will automatically:
 If you prefer to set up manually, you'll need to:
 
 1. Install Rust:
+
    ```bash
    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
    ```
 
 2. Install Soroban CLI:
+
    ```bash
    cargo install stellar-cli
    ```
 
 3. Add the WebAssembly target:
+
    ```bash
    rustup target add wasm32-unknown-unknown
    ```
 
 4. Verify your setup:
+
    ```bash
    cargo build
    ```
