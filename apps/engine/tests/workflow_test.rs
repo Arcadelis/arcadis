@@ -42,7 +42,7 @@ fn test_ci_workflow() {
         .current_dir(&project_dir)
         .output()
         .expect("Failed to check wasm32 target");
-    
+
     let output = String::from_utf8_lossy(&wasm_check.stdout);
     if output.contains("wasm32-unknown-unknown") {
         println!("wasm32-unknown-unknown target is available, attempting build...");
@@ -60,10 +60,8 @@ fn test_ci_workflow() {
 
     // Check if soroban CLI is available
     println!("Step 4: Checking if Soroban CLI is available...");
-    let soroban_check = Command::new("which")
-        .arg("soroban")
-        .status();
-    
+    let soroban_check = Command::new("which").arg("soroban").status();
+
     // Build Stellar contract if soroban is available
     if soroban_check.is_ok() && soroban_check.unwrap().success() {
         println!("Soroban CLI found, attempting to build contract...");
