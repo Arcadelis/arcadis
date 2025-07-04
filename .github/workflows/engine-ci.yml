@@ -1,0 +1,67 @@
+name: Engine CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/engine/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/engine/**'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          apps/engine/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('apps/engine/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+    
+    - name: Setup Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: wasm32-unknown-unknown
+        override: true
+        components: rustfmt
+    
+    - name: Install Soroban CLI
+      run: |
+        cargo install --locked soroban-cli
+    
+    - name: Check formatting
+      run: |
+        cd apps/engine
+        cargo fmt -- --check
+    
+    - name: Build (native)
+      run: |
+        cd apps/engine
+        cargo build --verbose
+    
+    - name: Build (wasm32)
+      run: |
+        cd apps/engine
+        cargo build --target wasm32-unknown-unknown --release
+    
+    - name: Build Stellar contract
+      run: |
+        cd apps/engine
+        soroban contract build
+    
+    - name: Run tests
+      run: |
+        cd apps/engine
+        cargo test --verbose
