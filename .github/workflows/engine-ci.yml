@@ -2,66 +2,61 @@ name: Engine CI
 
 on:
   push:
-    branches: [ main ]
+    branches: ['main']
     paths:
       - 'apps/engine/**'
   pull_request:
-    branches: [ main ]
+    branches: ['main']
     paths:
       - 'apps/engine/**'
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
-  build-and-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
-    
+  build:
+    runs-on: macos-latest
+
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
+      - name: Install Rust target for Soroban
+        run: |
+          source $HOME/.cargo/env
+          rustup target add wasm32v1-none
+      - name: Install Stellar CLI with Homebrew
+        run: |
+          brew update
+          brew install stellar-cli
+          stellar --version
+      - name: Build Cargo project
+        run: |
+          source $HOME/.cargo/env
+          cargo build --verbose
+        working-directory: apps/engine
+
+      - name: Check formatting cargo
+        run: |
+          cargo fmt -- --check
+        working-directory: apps/engine
     
-    - name: Cache Rust dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          apps/engine/target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('apps/engine/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-
-    
-    - name: Setup Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        target: wasm32-unknown-unknown
-        override: true
-        components: rustfmt
-    
-    - name: Install Soroban CLI
-      run: |
-        cargo install --locked soroban-cli
-    
-    - name: Check formatting
-      run: |
-        cd apps/engine
-        cargo fmt -- --check
-    
-    - name: Build (native)
-      run: |
-        cd apps/engine
-        cargo build --verbose
-    
-    - name: Build (wasm32)
-      run: |
-        cd apps/engine
-        cargo build --target wasm32-unknown-unknown --release
-    
-    - name: Build Stellar contract
-      run: |
-        cd apps/engine
-        soroban contract build
-    
-    - name: Run tests
-      run: |
-        cd apps/engine
-        cargo test --verbose
+      - name: Build wasm32
+        run: |
+          cargo build --target wasm32-unknown-unknown --release
+        working-directory: apps/engine
+
+      - name: Build Stellar contract
+        run: |
+          source $HOME/.cargo/env
+          stellar contract build --verbose
+        working-directory: apps/engine
+
+      - name: Run Cargo tests
+        run: |
+          source $HOME/.cargo/env
+          cargo test --verbose
+        working-directory: apps/engine
