@@ -4,11 +4,11 @@ A high-performance blockchain-based game engine built with Rust and Soroban smar
 
 ## Overview
 
-The Arcadis game engine combines the performance of Rust with the security and decentralization of Soroban smart contracts. This engine provides developers with the tools to create immersive blockchain games featuring:
+The Arcadis game engine combines the performance of Rust with the security and decentralization of Stellar smart contracts. This engine provides developers with the tools to create immersive blockchain games featuring:
 
 ### Key Features
 
-- **🔗 Smart Contract Integration**: Seamless interaction with Soroban contracts for game logic
+- **🔗 Smart Contract Integration**: Seamless interaction with Stellar contracts for game logic
 - **⚡ High Performance**: Rust-powered engine optimized for gaming workloads  
 - **🌐 Decentralized Architecture**: Blockchain-based game state management
 - **👨‍💻 Developer-Friendly**: Comprehensive tooling and clear APIs
@@ -42,16 +42,16 @@ rustc --version
 cargo --version
 ```
 
-### 2. Install Soroban CLI
+### 2. Install Stellar CLI
 
-Install the Soroban CLI tool for smart contract development:
+Install the Stellar CLI tool for smart contract development:
 
 ```bash
-# Install Soroban CLI
-cargo install --locked soroban-cli
+# Install Stellar CLI
+cargo install --locked stellar-cli
 
 # Verify installation
-soroban --version
+stellar --version
 ```
 
 ### 3. Add WebAssembly Target
@@ -66,22 +66,22 @@ rustup target add wasm32-unknown-unknown
 rustup target list --installed | grep wasm32
 ```
 
-### 4. Configure Soroban Network
+### 4. Configure Stellar Network
 
-Set up Soroban for development with the testnet:
+Set up Stellar CLI for development with the testnet:
 
 ```bash
 # Configure testnet network
-soroban config network add \
+stellar config network add \
   --global testnet \
   --rpc-url https://soroban-testnet.stellar.org:443 \
   --network-passphrase "Test SDF Network ; September 2015"
 
 # Generate a test identity
-soroban config identity generate --global alice
+stellar config identity generate --global alice
 
 # Fund the test account (get test XLM)
-soroban config identity fund alice --network testnet
+stellar config identity fund alice --network testnet
 ```
 
 ## Running a Test Contract
@@ -95,7 +95,7 @@ Follow these steps to deploy and test a sample Soroban contract:
 cd contracts/
 
 # Create a new contract
-soroban contract init hello_world
+stellar contract init hello_world
 
 # Navigate to the contract directory
 cd hello_world/
@@ -105,7 +105,7 @@ cd hello_world/
 
 ```bash
 # Build the contract
-soroban contract build
+stellar contract build
 
 # The compiled contract will be in target/wasm32-unknown-unknown/release/
 ```
@@ -114,7 +114,7 @@ soroban contract build
 
 ```bash
 # Deploy the contract
-soroban contract deploy \
+stellar contract deploy \
   --wasm target/wasm32-unknown-unknown/release/hello_world.wasm \
   --source alice \
   --network testnet
@@ -126,7 +126,7 @@ soroban contract deploy \
 
 ```bash
 # Invoke a contract function (example)
-soroban contract invoke \
+stellar contract invoke \
   --id <CONTRACT_ID> \
   --source alice \
   --network testnet \
@@ -174,18 +174,18 @@ apps/engine/
     └── test.sh                  # Test runner script
 ```
 
-## Soroban CLI Usage Examples
+## Stellar CLI Usage Examples
 
-Here are common Soroban CLI commands you'll use during development:
+Here are common Stellar CLI commands you'll use during development:
 
 ### Network Management
 
 ```bash
 # List configured networks
-soroban config network ls
+stellar config network ls
 
 # Add a custom network
-soroban config network add \
+stellar config network add \
   --global local \
   --rpc-url http://localhost:8000/soroban/rpc \
   --network-passphrase "Standalone Network ; February 2017"
@@ -195,45 +195,45 @@ soroban config network add \
 
 ```bash
 # List identities
-soroban config identity ls
+stellar config identity ls
 
 # Generate new identity
-soroban config identity generate --global bob
+stellar config identity generate --global bob
 
 # Get identity address
-soroban config identity address alice
+stellar config identity address alice
 ```
 
 ### Contract Development
 
 ```bash
 # Initialize new contract
-soroban contract init my_contract
+stellar contract init my_contract
 
 # Build contract
-soroban contract build
+stellar contract build
 
 # Install contract dependencies
-soroban contract install --wasm target/wasm32-unknown-unknown/release/my_contract.wasm
+stellar contract install --wasm target/wasm32-unknown-unknown/release/my_contract.wasm
 
 # Deploy contract
-soroban contract deploy --wasm target/wasm32-unknown-unknown/release/my_contract.wasm --source alice --network testnet
+stellar contract deploy --wasm target/wasm32-unknown-unknown/release/my_contract.wasm --source alice --network testnet
 
 # Invoke contract function
-soroban contract invoke --id <CONTRACT_ID> --source alice --network testnet -- function_name --arg1 value1
+stellar contract invoke --id <CONTRACT_ID> --source alice --network testnet -- function_name --arg1 value1
 ```
 
 ### Testing and Debugging
 
 ```bash
 # Run contract with local sandbox
-soroban contract invoke --id <CONTRACT_ID> --source alice --network local -- test_function
+stellar contract invoke --id <CONTRACT_ID> --source alice --network local -- test_function
 
 # Inspect contract metadata
-soroban contract inspect --wasm target/wasm32-unknown-unknown/release/my_contract.wasm
+stellar contract inspect --wasm target/wasm32-unknown-unknown/release/my_contract.wasm
 
 # Get contract events
-soroban events --start-ledger 1000 --count 10 --network testnet
+stellar events --start-ledger 1000 --count 10 --network testnet
 ```
 
 ## Development Workflow
@@ -280,24 +280,24 @@ To start developing with the Arcadis game engine:
 
 ### Common Issues
 
-**Rust compilation errors:**
+#### Rust Compilation Errors
 - Ensure you have the latest stable Rust version: `rustup update`
 - Verify wasm32 target is installed: `rustup target add wasm32-unknown-unknown`
 
-**Soroban CLI issues:**
-- Update to latest version: `cargo install --locked soroban-cli --force`
-- Check network configuration: `soroban config network ls`
+#### Stellar CLI Issues
+- Update to latest version: `cargo install --locked stellar-cli --force`
+- Check network configuration: `stellar config network ls`
 
-**Contract deployment failures:**
+#### Contract Deployment Failures
 - Verify account funding: `soroban config identity fund <identity> --network testnet`
 - Check network connectivity and RPC endpoints
 
 ### Getting Help
 
-- **Documentation**: Check the `docs/` directory for detailed guides
-- **Examples**: Review `examples/` for working code samples
-- **Community**: Join the Stellar Discord for Soroban support
-- **Issues**: Report bugs and feature requests on the project repository
+- **📚 Documentation**: Check the `docs/` directory for detailed guides
+- **💡 Examples**: Review `examples/` for working code samples
+- **👥 Community**: Join the Stellar Discord for Soroban support
+- **🐛 Issues**: Report bugs and feature requests on the project repository
 
 ## Contributing
 
