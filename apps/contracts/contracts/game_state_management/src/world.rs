@@ -12,7 +12,7 @@ pub struct WorldState {
 
 pub fn update_world_state(env: &Env, region_id: String, state_data: BytesN<64>) {
     let timestamp = env.ledger().timestamp();
-    let  world_key: soroban_sdk::Symbol = Symbol::new(&env ,"WORLD");
+    let world_key: soroban_sdk::Symbol = Symbol::new(&env, "WORLD");
 
     let world_state = WorldState {
         region_id: region_id.clone(),

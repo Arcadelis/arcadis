@@ -16,7 +16,7 @@ pub fn save_progress(env: &Env, player: Address, data: BytesN<64>) -> BytesN<32>
     let data_bytes: Bytes = data.into();
     let data_hash = env.crypto().sha256(&data_bytes);
     let timestamp = env.ledger().timestamp();
-    let save_key: soroban_sdk::Symbol = Symbol::new(&env ,"SAVES");
+    let save_key: soroban_sdk::Symbol = Symbol::new(&env, "SAVES");
 
     let save_point = SavePoint {
         player: player.clone(),
@@ -36,12 +36,12 @@ pub fn save_progress(env: &Env, player: Address, data: BytesN<64>) -> BytesN<32>
 }
 
 pub fn load_progress(env: &Env, player: Address, timestamp: Option<u64>) -> Option<SavePoint> {
-    let save_key: soroban_sdk::Symbol = Symbol::new(&env ,"SAVES");
+    let save_key: soroban_sdk::Symbol = Symbol::new(&env, "SAVES");
     let saves: Vec<SavePoint> = env
         .storage()
         .persistent()
         .get(&save_key)
-        .unwrap_or(Vec::new(env));
+        .unwrap_or(Vec::new(&env));
 
     if let Some(ts) = timestamp {
         saves
