@@ -13,7 +13,6 @@ use soroban_ecs::world::World;
 
 pub struct Position {
     pub x: u32,
-
     pub y: u32,
 }
 
