@@ -132,7 +132,7 @@ fn test_contract_run_function() {
     // let client = EcsTestContractClient::new(&env, &env.register(EcsTestContract, ()));
 
     // Register the contract
-    let contract_id = env.register(EcsTestContract, ());
+    let contract_id = env.register_contract(None, EcsTestContract);
     let client = EcsTestContractClient::new(&env, &contract_id);
 
     // Call the run function which encapsulates the ECS workflow

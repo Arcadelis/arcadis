@@ -12,7 +12,7 @@ rust-version = "1.70.0"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-soroban-sdk = "20.0.0"
+soroban-sdk = { workspace = true }
 wee_alloc = "0.4.5"
 
 # Core dependencies adapted for no_std
