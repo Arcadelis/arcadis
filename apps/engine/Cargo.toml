@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-soroban-sdk = "23.0.0-rc.1.1"
+soroban-sdk = { workspace = true }
 wee_alloc = "0.4"
 
 [lib]
