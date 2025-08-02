@@ -1,0 +1,15 @@
+
+[package]
+name = "ecs-test"
+version = "0.1.0"
+edition = "2021"
+description = "Example contract demonstrating soroban-ecs usage"
+license = "MIT OR Apache-2.0"
+[lib]
+crate-type = ["cdylib"]
+[dependencies]
+soroban-sdk = "20.0.0"
+soroban-ecs = { path = "../../ecs" }
+wee_alloc = "0.4.5"
+[dev-dependencies]
+soroban-sdk = { version = "20.0.0", features = ["testutils"] }
