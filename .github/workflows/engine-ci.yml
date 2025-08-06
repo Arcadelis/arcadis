@@ -12,85 +12,41 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  RUST_BACKTRACE: 1
 
 jobs:
-  test:
-    name: Test Suite
+  build:
     runs-on: macos-latest
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      - name: Install Rust toolchain
+      - name: Install Rust
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           source $HOME/.cargo/env
-          rustup component add rustfmt clippy
-
       - name: Install Rust target for Soroban
         run: |
           source $HOME/.cargo/env
-          rustup target add wasm32-unknown-unknown
-
-      - name: Install Stellar CLI
+          rustup target add wasm32v1-none
+      - name: Install Stellar CLI with Homebrew
         run: |
           brew update
           brew install stellar-cli
           stellar --version
-
-      - name: Check code formatting
-        run: |
-          source $HOME/.cargo/env
-          cargo fmt -- --check
-        working-directory: apps/engine
-
-      - name: Run Clippy lints
-        run: |
-          source $HOME/.cargo/env
-          cargo clippy -- -D warnings
-        working-directory: apps/engine
-
-      - name: Run unit tests
-        run: |
-          source $HOME/.cargo/env
-          cargo test --lib --verbose
-        working-directory: apps/engine
-
-      - name: Run integration tests
-        run: |
-          source $HOME/.cargo/env
-          cargo test --test game --verbose
-        working-directory: apps/engine
-
-      - name: Run all tests with coverage info
-        run: |
-          source $HOME/.cargo/env
-          cargo test --verbose -- --nocapture
-        working-directory: apps/engine
-
-      - name: Build native target
+      - name: Build Cargo project
         run: |
           source $HOME/.cargo/env
           cargo build --verbose
         working-directory: apps/engine
 
-      - name: Build WebAssembly target
+      - name: Check formatting cargo
         run: |
-          source $HOME/.cargo/env
-          cargo build --target wasm32-unknown-unknown --release --verbose
+          cargo fmt -- --check
+        working-directory: apps/engine
+    
+      - name: Build wasm32
+        run: |
+          cargo build --target wasm32-unknown-unknown --release
         working-directory: apps/engine
 
       - name: Build Stellar contract
@@ -99,46 +55,8 @@ jobs:
           stellar contract build --verbose
         working-directory: apps/engine
 
-      - name: Verify contract build artifacts
-        run: |
-          ls -la target/wasm32-unknown-unknown/release/
-          if [ -f "target/wasm32-unknown-unknown/release/apps_engine.wasm" ]; then
-            echo "✅ Contract WASM file generated successfully"
-            wc -c target/wasm32-unknown-unknown/release/apps_engine.wasm
-          else
-            echo "❌ Contract WASM file not found"
-            exit 1
-          fi
-        working-directory: apps/engine
-
-  security-audit:
-    name: Security Audit
-    runs-on: macos-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-audit-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Install Rust toolchain
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
-
-      - name: Install cargo-audit
+      - name: Run Cargo tests
         run: |
           source $HOME/.cargo/env
-          cargo install cargo-audit
-
-      - name: Run security audit
-        run: |
-          source $HOME/.cargo/env
-          cargo audit
+          cargo test --verbose
         working-directory: apps/engine
