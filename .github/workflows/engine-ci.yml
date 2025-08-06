@@ -12,41 +12,85 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
 
 jobs:
-  build:
+  test:
+    name: Test Suite
     runs-on: macos-latest
-
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install Rust
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install Rust toolchain
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           source $HOME/.cargo/env
+          rustup component add rustfmt clippy
+
       - name: Install Rust target for Soroban
         run: |
           source $HOME/.cargo/env
-          rustup target add wasm32v1-none
-      - name: Install Stellar CLI with Homebrew
+          rustup target add wasm32-unknown-unknown
+
+      - name: Install Stellar CLI
         run: |
           brew update
           brew install stellar-cli
           stellar --version
-      - name: Build Cargo project
+
+      - name: Check code formatting
+        run: |
+          source $HOME/.cargo/env
+          cargo fmt -- --check
+        working-directory: apps/engine
+
+      - name: Run Clippy lints
+        run: |
+          source $HOME/.cargo/env
+          cargo clippy -- -D warnings
+        working-directory: apps/engine
+
+      - name: Run unit tests
+        run: |
+          source $HOME/.cargo/env
+          cargo test --lib --verbose
+        working-directory: apps/engine
+
+      - name: Run integration tests
+        run: |
+          source $HOME/.cargo/env
+          cargo test --test game --verbose
+        working-directory: apps/engine
+
+      - name: Run all tests with coverage info
+        run: |
+          source $HOME/.cargo/env
+          cargo test --verbose -- --nocapture
+        working-directory: apps/engine
+
+      - name: Build native target
         run: |
           source $HOME/.cargo/env
           cargo build --verbose
         working-directory: apps/engine
 
-      - name: Check formatting cargo
+      - name: Build WebAssembly target
         run: |
-          cargo fmt -- --check
-        working-directory: apps/engine
-    
-      - name: Build wasm32
-        run: |
-          cargo build --target wasm32-unknown-unknown --release
+          source $HOME/.cargo/env
+          cargo build --target wasm32-unknown-unknown --release --verbose
         working-directory: apps/engine
 
       - name: Build Stellar contract
@@ -55,8 +99,46 @@ jobs:
           stellar contract build --verbose
         working-directory: apps/engine
 
-      - name: Run Cargo tests
+      - name: Verify contract build artifacts
+        run: |
+          ls -la target/wasm32-unknown-unknown/release/
+          if [ -f "target/wasm32-unknown-unknown/release/apps_engine.wasm" ]; then
+            echo "✅ Contract WASM file generated successfully"
+            wc -c target/wasm32-unknown-unknown/release/apps_engine.wasm
+          else
+            echo "❌ Contract WASM file not found"
+            exit 1
+          fi
+        working-directory: apps/engine
+
+  security-audit:
+    name: Security Audit
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-audit-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Rust toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
+
+      - name: Install cargo-audit
         run: |
           source $HOME/.cargo/env
-          cargo test --verbose
+          cargo install cargo-audit
+
+      - name: Run security audit
+        run: |
+          source $HOME/.cargo/env
+          cargo audit
         working-directory: apps/engine
