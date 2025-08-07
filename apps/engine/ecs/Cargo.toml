@@ -9,7 +9,8 @@ categories = ["game-engines", "data-structures"]
 rust-version = "1.70.0"
 
 [lib]
-crate-type = ["cdylib"]
+name = "soroban_ecs"
+crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 soroban-sdk = "20.0.0"
