@@ -12,6 +12,7 @@ The Arcadis game engine combines the performance of Rust with the security and d
 - **⚡ High Performance**: Rust-powered engine optimized for gaming workloads  
 - **🌐 Decentralized Architecture**: Blockchain-based game state management
 - **👨‍💻 Developer-Friendly**: Comprehensive tooling and clear APIs
+- **🧪 Comprehensive Testing**: Robust test suite with CI/CD integration
 
 ## Prerequisites
 
@@ -83,6 +84,44 @@ stellar config identity generate --global alice
 # Fund the test account (get test XLM)
 stellar config identity fund alice --network testnet
 ```
+
+## Testing
+
+The Arcadis game engine includes a comprehensive testing framework to ensure code quality and reliability. 
+
+### Quick Test Commands
+
+```bash
+# Run all tests
+cargo test
+
+# Run tests with output
+cargo test -- --nocapture
+
+# Run only unit tests
+cargo test --lib
+
+# Run only integration tests
+cargo test --tests
+
+# Run the comprehensive test script
+./scripts/test.sh
+```
+
+### Testing Documentation
+
+For detailed testing guidelines, including how to write unit tests, integration tests, and Soroban contract tests, see our comprehensive testing documentation:
+
+**📚 [Testing Documentation](docs/testing.md)**
+
+The testing documentation covers:
+- Testing framework overview
+- Writing unit tests with best practices
+- Soroban contract testing guidelines
+- Integration test patterns
+- Running and interpreting test results
+- Debugging test failures
+- CI/CD testing pipeline
 
 ## Running a Test Contract
 
@@ -163,10 +202,12 @@ apps/engine/
 │   └── nft_showcase/            # NFT integration example
 ├── tests/                       # Test files
 │   ├── integration/             # Integration tests
+│   ├── workflow_test.rs         # CI workflow simulation
 │   └── unit/                    # Unit tests
 ├── docs/                        # Additional documentation
 │   ├── architecture.md          # Engine architecture
 │   ├── api_reference.md         # API documentation
+│   ├── testing.md              # Testing guidelines and documentation
 │   └── tutorials/               # Tutorial guides
 └── scripts/                     # Build and deployment scripts
     ├── build.sh                 # Build script
@@ -250,7 +291,7 @@ stellar events --start-ledger 1000 --count 10 --network testnet
    Implement game logic in the `src/` directory
 
 4. **🧪 Testing**  
-   Run tests using `cargo test` and contract-specific tests
+   Run tests using `cargo test` and contract-specific tests (see [Testing Documentation](docs/testing.md))
 
 5. **🚀 Deployment**  
    Deploy contracts to testnet/mainnet using provided scripts
@@ -267,13 +308,16 @@ To start developing with the Arcadis game engine:
 2. **Build the Engine**  
    Run `cargo build` to compile the engine
 
-3. **Explore Examples**  
+3. **Run Tests**  
+   Execute `cargo test` to verify everything works correctly
+
+4. **Explore Examples**  
    Browse the `examples/` directory for sample implementations
 
-4. **Study Documentation**  
+5. **Study Documentation**  
    Review the `docs/` directory for detailed guides and API references
 
-5. **Examine Contracts**  
+6. **Examine Contracts**  
    Check the `contracts/` directory for sample smart contracts
 
 ## Troubleshooting
@@ -289,19 +333,32 @@ To start developing with the Arcadis game engine:
 - Check network configuration: `stellar config network ls`
 
 #### Contract Deployment Failures
-- Verify account funding: `soroban config identity fund <identity> --network testnet`
+- Verify account funding: `stellar config identity fund <identity> --network testnet`
 - Check network connectivity and RPC endpoints
+
+#### Test Failures
+- Run tests with verbose output: `cargo test -- --nocapture`
+- Check the [Testing Documentation](docs/testing.md) for debugging tips
+- Run individual failing tests: `cargo test test_name --exact`
 
 ### Getting Help
 
 - **📚 Documentation**: Check the `docs/` directory for detailed guides
+- **🧪 Testing**: Review [Testing Documentation](docs/testing.md) for test-related issues
 - **💡 Examples**: Review `examples/` for working code samples
 - **👥 Community**: Join the Stellar Discord for Soroban support
 - **🐛 Issues**: Report bugs and feature requests on the project repository
 
 ## Contributing
 
-We welcome contributions to the Arcadis game engine! Please review our contribution guidelines and submit pull requests for review.
+We welcome contributions to the Arcadis game engine! Please review our contribution guidelines and ensure all tests pass before submitting pull requests.
+
+### Before Contributing
+
+1. Run the full test suite: `cargo test`
+2. Check code formatting: `cargo fmt -- --check`
+3. Run linting: `cargo clippy -- -D warnings`
+4. Review the [Testing Documentation](docs/testing.md) for testing guidelines
 
 ## License
 
