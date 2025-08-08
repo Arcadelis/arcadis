@@ -61,24 +61,32 @@ pub fn save_contract_data(env: &Env, data: &GameWorldData) {
     env.storage().instance().set(&key, &val);
 }
 
-
-pub fn get_entity_data(env: &Env) -> Option<Val> {
-    let entity_key = symbol_short!("entity");
-    env.storage().instance().get::<Symbol, Val>(&entity_key)
+// Retrieves entity data (id, x, y, health) from storage
+pub fn get_entity_data(env: &Env, entity_id: u32) -> Option<Val> {
+    let entity_key = symbol_short!("entity"); 
+    if let Some(map) = env.storage().instance().get::<Symbol, Map<u32, Val>>(&entity_key) {
+        map.get(entity_id)
+    } else {
+        None
+    }
 }
 
-
-pub fn set_entity_data(env: &Env, val: Val)  {
-    let entity_key = symbol_short!("entity");
-    // env.storage().instance().get::<Symbol, Val>(&entity_key)
-    env.storage().instance().set::<Symbol, Val>(&entity_key, &val);
-
+// Stores entity data (id, x, y, health) in storage
+pub fn set_entity_data(env: &Env, entity_id: u32, val: Val) {
+    let entity_key = symbol_short!("entity"); 
+    let mut map = env.storage().instance()
+        .get::<Symbol, Map<u32, Val>>(&entity_key)
+        .unwrap_or_else(|| Map::new(env)); 
+    map.set(entity_id, val); 
+    env.storage().instance().set::<Symbol, Map<u32, Val>>(&entity_key, &map); 
 }
 
-
-pub fn remove_entity_data(env: &Env)  {
-    let entity_key = symbol_short!("entity");
-    // env.storage().instance().get::<Symbol, Val>(&entity_key)
-    env.storage().instance().remove(&entity_key);
-
+// Removes entity data from storage
+pub fn remove_entity_data(env: &Env, entity_id: u32) {
+    let entity_key = symbol_short!("entity"); 
+    if let Some(mut map) = env.storage().instance()
+        .get::<Symbol, Map<u32, Val>>(&entity_key) {
+        map.remove(entity_id);
+        env.storage().instance().set::<Symbol, Map<u32, Val>>(&entity_key, &map); 
+    }
 }
