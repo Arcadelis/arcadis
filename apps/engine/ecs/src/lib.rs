@@ -25,7 +25,7 @@ pub mod systems;
 
 // Re-export core types
 pub use entity::{Entity, EntityId};
-pub use component::{Component, ComponentId, ComponentStorage};
+pub use component::{Component, ComponentId, ComponentStorage, ComponentTrait};
 pub use world::World;
 pub use system::{System, SystemParam, IntoSystem};
 pub use storage::{Storage, TableStorage, SparseStorage};

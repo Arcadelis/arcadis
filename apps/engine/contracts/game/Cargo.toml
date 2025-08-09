@@ -1,0 +1,13 @@
+[package]
+name = "game"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+soroban-sdk = "20.0.0"
+
+soroban-ecs = { path = "../../ecs" }
+wee_alloc = "0.4"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
