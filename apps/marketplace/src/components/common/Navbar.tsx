@@ -10,8 +10,8 @@ function Navbar() {
         <div className='flex items-center gap-x-[1.5rem]'>
             <Link href="/" className='text-base text-[#94A3B8]'>Browse Games</Link>
             <Link href="/" className='text-base text-[#94A3B8]'>Developer Hub</Link>
-            <button className='w-[4.9375rem] h-[2.5rem] rounded-[0.375rem] bg-[#0D0F11] border border-[#16213E] text-sm font-medium cursor-pointer'>Sign In</button>
-            <button className='w-[5.1875rem] h-[2.5rem] rounded-[0.375rem] bg-gradient-to-br from-[#00D4FF] to-[#A855F7] text-sm text-[#0D0F11] font-medium cursor-pointer'>sign Up</button>
+            <Link href="/sign-in" className='w-[4.9375rem] h-[2.5rem] rounded-[0.375rem] bg-[#0D0F11] border border-[#16213E] text-sm font-medium cursor-pointer flex justify-center items-center'>Sign In</Link>
+            <Link href="/sign-up" className='w-[5.1875rem] h-[2.5rem] rounded-[0.375rem] bg-gradient-to-br from-[#00D4FF] to-[#A855F7] text-sm text-[#0D0F11] font-medium cursor-pointer flex justify-center items-center'>sign Up</Link>
         </div>
     </nav>
   )
