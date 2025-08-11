@@ -4,7 +4,7 @@ import React from 'react'
 
 function Navbar() {
   return (
-    <nav className='w-full bg-[#050508CC] h-[5.3rem] fixed top-0 left-0 px-[3.625rem] flex justify-between items-center'>
+    <nav className='w-full bg-[#050508CC] h-[5.3rem] fixed top-0 left-0 px-[3.625rem] flex justify-between items-center z-50'>
         <Image src="/svgs/logo.svg" alt='arcadis-marketplace' width={187} height={52} quality={90} />
 
         <div className='flex items-center gap-x-[1.5rem]'>
