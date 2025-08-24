@@ -1,6 +1,7 @@
 'use client'
 import { PageWrapper } from '@/components/PageWrapper'
 
+
 const Community = () => {
 	return (
 		<PageWrapper>
