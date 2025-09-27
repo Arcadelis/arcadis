@@ -157,8 +157,8 @@ cargo test --tests
 # Test specific contract
 cd contracts/game && cargo test
 
-# Build and test with Soroban CLI
-soroban contract build && soroban contract test
+# Build and test with Stellar CLI
+stellar contract build
 ```
 
 ### Testing Documentation
