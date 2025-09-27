@@ -151,7 +151,7 @@ function SignIn() {
 
             <button className='w-full h-[3rem] mt-[1rem] rounded-[0.375rem] bg-gradient-to-br from-[#00D4FF] to-[#A855F7] text-[1.125rem] text-[#0D0F11] font-bold cursor-pointer flex justify-center items-center'>SIGN IN</button>
 
-            <p className="mt-[1.5rem] text-[#9CA3AF] text-base text-center">Don't have an account?  <span className="font-semibold text-[#00D4FF]">Sign up here</span></p>
+            <p className="mt-[1.5rem] text-[#9CA3AF] text-base text-center">Don&apos;t have an account?  <span className="font-semibold text-[#00D4FF]">Sign up here</span></p>
           </form>
 
           <p className="text-xs text-[#6B7280] mt-[2rem]">By signing in, you agree to our  <Link href="/" className="text-[#00D4FF]">Terms of Service </Link>and <Link href="/" className="text-[#00D4FF]">Privacy Policy</Link></p>

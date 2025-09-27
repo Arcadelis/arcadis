@@ -101,8 +101,8 @@ export function FilterDropdown({ label, icon, value, options, onChange, ariaLabe
               <button
                 key={opt.value}
                 id={`${listboxId}-opt-${i}`}
-                aria-selected={isSelected}
                 type="button"
+                aria-current={isSelected ? "true" : undefined}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => { onChange(opt.value); setOpen(false); setActive(-1); btnRef.current?.focus() }}
                 onKeyDown={(e) => {
