@@ -76,7 +76,7 @@ export function FilterDropdown({ label, icon, value, options, onChange, ariaLabe
         aria-haspopup="listbox"
         aria-controls={open ? listboxId : undefined}
         aria-label={ariaLabel}
-        className="h-12 min-w-[160px] rounded border border-[#16213E] bg-[#050508]
+        className="h-12 w-full min-w-[160px] rounded border border-[#16213E] bg-[#050508]
                    px-[13px] text-[14px] text-white flex items-center gap-2
                    focus:outline-none focus:ring-2 focus:ring-[#00D4FF]"
       >
