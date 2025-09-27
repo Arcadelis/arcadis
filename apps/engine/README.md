@@ -87,9 +87,59 @@ stellar config identity fund alice --network testnet
 
 ## Testing
 
-The Arcadis game engine includes a comprehensive testing framework to ensure code quality and reliability. 
+The Arcadis game engine includes a comprehensive testing framework to ensure code quality and reliability.
 
-### Quick Test Commands
+### Automated Test Script
+
+We provide an automated test script `scripts/test.sh` that streamlines testing for the Soroban ECS game logic contract. This script automates dependency checks, builds, and test execution in the Soroban sandbox.
+
+#### Basic Usage
+
+```bash
+# Run all tests with automatic dependency verification
+./scripts/test.sh
+
+# Run tests with verbose output
+./scripts/test.sh --verbose
+
+# Run tests with help information
+./scripts/test.sh --help
+```
+
+#### Advanced Usage Options
+
+```bash
+# Test only the game contract (skip ECS library tests)
+./scripts/test.sh --game-only
+
+# Test only the ECS library (skip game contract tests)
+./scripts/test.sh --ecs-only
+
+# Skip dependency checks (faster for repeated runs)
+./scripts/test.sh --skip-deps
+
+# Skip build steps and run tests only
+./scripts/test.sh --no-build
+
+# Generate test coverage report (requires cargo-tarpaulin)
+./scripts/test.sh --coverage
+```
+
+#### What the Test Script Does
+
+The automated test script performs the following operations:
+
+1. **Dependency Verification**: Checks for Rust, Cargo, Soroban CLI, and wasm32 target
+2. **ECS Library Testing**: Builds and tests the core ECS library components
+3. **Game Contract Testing**: 
+   - Builds the game contract for native and WebAssembly targets
+   - Compiles with Soroban CLI for blockchain deployment
+   - Runs comprehensive unit tests in Soroban sandbox
+4. **Success Reporting**: Provides clear success/failure messages and execution time
+
+### Manual Test Commands
+
+For more granular control, you can run tests manually:
 
 ```bash
 # Run all tests
@@ -104,8 +154,11 @@ cargo test --lib
 # Run only integration tests
 cargo test --tests
 
-# Run the comprehensive test script
-./scripts/test.sh
+# Test specific contract
+cd contracts/game && cargo test
+
+# Build and test with Soroban CLI
+soroban contract build && soroban contract test
 ```
 
 ### Testing Documentation
