@@ -158,26 +158,36 @@ impl GameWorldContract {
 
     // Attacks an entity, reducing its health or marking it as dead
     pub fn attack_entity(env: &Env, entity_id: u32) -> bool {
-        if let Some(entity_data) = storage::get_entity_data(env, entity_id) { 
+        if let Some(entity_data) = storage::get_entity_data(env, entity_id) {
             if let Ok((id, x, y, health)) = <(u32, u32, u32, u32)>::try_from_val(env, &entity_data) {
                 if id == entity_id {
-                    let current_health = Health(health); 
-                    let new_health = CombatSystem::update_health(&current_health).0; 
+                    let current_health = Health(health);
+                    let new_health = CombatSystem::update_health(&current_health).0;
                     let mut contract_data = storage::get_contract_data(env);
-                    if new_health > 0 { 
-                        let updated_entity_data: (u32, u32, u32, u32) = (id, x, y, new_health); 
-                        let val: soroban_sdk::Val = updated_entity_data.into_val(env); 
+
+                    if new_health > 0 {
+                        // Just update the entity’s health
+                        let updated: (u32, u32, u32, u32) = (id, x, y, new_health);
+                        let val: Val = updated.into_val(env);
                         storage::set_entity_data(env, entity_id, val);
-                    } else { 
-                        contract_data.dead_entity += 1; 
-                        storage::remove_entity_data(env, entity_id); 
+                    } else {
+                        // Entity dies
+                        contract_data.dead_entity += 1;
+
+                        // 🔑 decrement live count
+                        if contract_data.entity_count > 0 {
+                            contract_data.entity_count -= 1;
+                        }
+
+                        storage::remove_entity_data(env, entity_id);
                     }
-                    storage::save_contract_data(env, &contract_data); 
+
+                    storage::save_contract_data(env, &contract_data);
                     return true;
                 }
             }
         }
-        false 
+        false
     }
 
     // Retrieves the position of an entity
