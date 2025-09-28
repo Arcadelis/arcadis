@@ -13,7 +13,7 @@ name = "soroban_ecs"
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
-soroban-sdk = "20.0.0"
+soroban-sdk = "23.0.1"
 wee_alloc = "0.4.5"
 
 # Core dependencies adapted for no_std

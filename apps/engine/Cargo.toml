@@ -4,17 +4,21 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-soroban-sdk = "23.0.0-rc.1.1"
-wee_alloc = "0.4"
+soroban-sdk = "23.0.1"
+wee_alloc   = "0.4"
+
+[dev-dependencies]
+# enable test utilities only during testing
+soroban-sdk = { version = "23.0.1", features = ["testutils"] }
+game = { path = "contracts/game" }
+soroban-ecs = { path = "ecs" }
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
+doctest = false
 
 [features]
 default = []
-
-[profile.dev]
-panic = "abort"
 
 [profile.release]
 lto = true
