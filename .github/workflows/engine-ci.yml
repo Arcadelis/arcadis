@@ -34,6 +34,10 @@ jobs:
           brew update
           brew install stellar-cli
           stellar --version
+
+      - name: Print Stellar CLI Version
+        run: |
+          stellar --version
       - name: Detect Nightly Toolchain
         id: detect_nightly
         run: |
