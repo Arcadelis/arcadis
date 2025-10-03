@@ -5,9 +5,7 @@ use soroban_ecs::{
     component::{Component, ComponentId, ComponentStorage, ComponentTrait},
     create_world,
     entity::{Entity, EntityId},
-    get_component,
-    remove_component,
-    spawn_entity,
+    get_component, remove_component, spawn_entity,
     world::World,
 };
 use soroban_sdk::{Env, Symbol, Vec};
