@@ -79,7 +79,11 @@ fn test_movement_system() {
 
     // Create and run the movement system
     let mut movement_system = MovementSystem {}; // Assuming default constructor
-    // This part is tricky without knowing how systems are run. Assuming a method like `run` that takes the world. If `MovementSystem` requires `SystemParam`, this will need more setup. For now, let's assume a simple `run` method. movement_system.run(&mut world); // This line is a placeholder for actual system execution
+    // This part is tricky without knowing how systems are run.
+    // Assuming a method like `run` that takes the world.
+    // If `MovementSystem` requires `SystemParam`, this will need more setup.
+    // For now, let's assume a simple `run` method.
+    // movement_system.run(&mut world); // This line is a placeholder for actual system execution
 
     // After running the system, check if the position has changed
     // This requires knowing how MovementSystem modifies Position.
