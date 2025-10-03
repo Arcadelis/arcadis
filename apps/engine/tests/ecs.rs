@@ -12,7 +12,8 @@ use soroban_sdk::{Env, Symbol, Vec};
 
 // Helper function to create a simple component for testing
 fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
-    Component::new(env, Symbol::new(env, name), &value)
+    let bytes = soroban_sdk::Bytes::from_array(env, &value.to_le_bytes());
+    Component::new(env, Symbol::new(env, name), &bytes)
 }
 
 #[test]
