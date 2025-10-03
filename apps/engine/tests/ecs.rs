@@ -1,0 +1,63 @@
+#![cfg(test)]
+
+use soroban_ecs::{
+    add_component,
+    component::{Component, ComponentId, ComponentStorage, ComponentTrait},
+    create_world,
+    entity::{Entity, EntityId},
+    get_component, remove_component, spawn_entity,
+    world::World,
+};
+use soroban_sdk::{symbol_short, Env, Symbol, Vec};
+
+// Helper function to create a simple component for testing
+fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
+    let bytes = soroban_sdk::Bytes::from_array(env, &value.to_le_bytes());
+    Component::new(Symbol::new(env, name), bytes)
+}
+
+#[test]
+fn test_world_creation() {
+    let _env = Env::default();
+    let world = create_world();
+    assert_eq!(world.entity_count(), 0);
+}
+
+#[test]
+fn test_spawn_entity_and_add_component() {
+    let env = Env::default();
+    let mut world = create_world();
+
+    let components = Vec::new(&env);
+    let entity_id = spawn_entity(&mut world, components);
+
+    assert_eq!(world.entity_count(), 1);
+
+    let position_component = create_test_component(&env, "Position", 10);
+    add_component(&mut world, entity_id, position_component.clone());
+
+    let position_symbol = symbol_short!("Position");
+    let retrieved_component = get_component(&world, entity_id, position_symbol);
+    assert!(retrieved_component.is_some());
+}
+
+#[test]
+fn test_remove_component() {
+    let env = Env::default();
+    let mut world = create_world();
+
+    let components = Vec::new(&env);
+    let entity_id = spawn_entity(&mut world, components);
+
+    let position_component = create_test_component(&env, "Position", 10);
+    add_component(&mut world, entity_id, position_component.clone());
+
+    let position_symbol = symbol_short!("Position");
+    assert!(get_component(&world, entity_id, position_symbol).is_some());
+
+    let removed = remove_component(&mut world, entity_id, position_symbol);
+    assert!(removed);
+
+    let retrieved_component = get_component(&world, entity_id, position_symbol);
+    assert!(retrieved_component.is_none());
+}
