@@ -27,16 +27,29 @@ jobs:
       - name: Install Rust target for Soroban
         run: |
           source $HOME/.cargo/env
-          rustup target add wasm32v1-none
+          rustup target add wasm32-unknown-unknown
       - name: Install Stellar CLI with Homebrew
         run: |
           brew update
           brew install stellar-cli
           stellar --version
+      - name: Detect Nightly Toolchain
+        id: detect_nightly
+        run: |
+          source $HOME/.cargo/env
+          if rustc --version | grep -q "nightly"; then
+            echo "NIGHTLY_TOOLCHAIN=true" >> $GITHUB_ENV
+          else
+            echo "NIGHTLY_TOOLCHAIN=false" >> $GITHUB_ENV
+          fi
       - name: Build Cargo project
         run: |
           source $HOME/.cargo/env
-          cargo build --verbose
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo build --verbose -Zbuild-std
+          else
+            cargo build --verbose
+          fi
         working-directory: apps/engine
 
       - name: Check formatting cargo
@@ -46,7 +59,11 @@ jobs:
     
       - name: Build wasm32
         run: |
-          cargo build --target wasm32-unknown-unknown --release
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo build --target wasm32-unknown-unknown --release -Zbuild-std
+          else
+            cargo build --target wasm32-unknown-unknown --release
+          fi
         working-directory: apps/engine
 
       - name: Build Stellar contract
@@ -58,5 +75,9 @@ jobs:
       - name: Run Cargo tests
         run: |
           source $HOME/.cargo/env
-          cargo test --verbose
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo test --verbose -Zbuild-std
+          else
+            cargo test --verbose
+          fi
         working-directory: apps/engine

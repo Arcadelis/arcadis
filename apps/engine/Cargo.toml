@@ -20,6 +20,9 @@ doctest = false
 [features]
 default = []
 
+[profile.dev]
+panic = "abort"
+
 [profile.release]
 lto = true
 codegen-units = 1
