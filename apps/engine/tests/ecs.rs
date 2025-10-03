@@ -1,15 +1,19 @@
 #![cfg(test)]
 
-use soroban_sdk::{Env, Symbol, Vec};
 use soroban_ecs::{
-    create_world, spawn_entity, add_component, remove_component, get_component,
-    entity::{Entity, EntityId},
+    add_component,
     component::{Component, ComponentId, ComponentStorage, ComponentTrait},
-    world::World,
-    system::{System, SystemParam, IntoSystem},
     components::Position, // Assuming Position is a simple component
+    create_world,
+    entity::{Entity, EntityId},
+    get_component,
+    remove_component,
+    spawn_entity,
+    system::{IntoSystem, System, SystemParam},
     systems::MovementSystem, // Assuming MovementSystem is a simple system
+    world::World,
 };
+use soroban_sdk::{Env, Symbol, Vec};
 
 // Helper function to create a simple component for testing
 fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
