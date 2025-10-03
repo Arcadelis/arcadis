@@ -3,14 +3,11 @@
 use soroban_ecs::{
     add_component,
     component::{Component, ComponentId, ComponentStorage, ComponentTrait},
-    components::Position, // Assuming Position is a simple component
     create_world,
     entity::{Entity, EntityId},
     get_component,
     remove_component,
     spawn_entity,
-    system::{IntoSystem, System, SystemParam},
-    systems::MovementSystem, // Assuming MovementSystem is a simple system
     world::World,
 };
 use soroban_sdk::{Env, Symbol, Vec};
@@ -42,9 +39,6 @@ fn test_spawn_entity_and_add_component() {
 
     let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
     assert!(retrieved_component.is_some());
-    // Further assertions to check the component's value would require deserialization,
-    // which might be complex without knowing the exact structure of `Component`.
-    // For now, checking `is_some()` is sufficient.
 }
 
 #[test]
@@ -64,4 +58,3 @@ fn test_remove_component() {
     let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
     assert!(retrieved_component.is_none());
 }
-
