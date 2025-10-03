@@ -17,7 +17,7 @@ fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
 
 #[test]
 fn test_world_creation() {
-    let env = Env::default();
+    let _env = Env::default();
     let world = create_world();
     assert_eq!(world.entity_count(), 0);
 }
