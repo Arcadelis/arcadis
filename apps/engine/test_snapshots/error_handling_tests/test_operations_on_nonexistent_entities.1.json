@@ -63,6 +63,22 @@
                             }
                           ]
                         }
+                      },
+                      {
+                        "key": {
+                          "symbol": "dead_cnt"
+                        },
+                        "val": {
+                          "u32": 0
+                        }
+                      },
+                      {
+                        "key": {
+                          "symbol": "ent_cnt"
+                        },
+                        "val": {
+                          "u32": 0
+                        }
                       }
                     ]
                   }

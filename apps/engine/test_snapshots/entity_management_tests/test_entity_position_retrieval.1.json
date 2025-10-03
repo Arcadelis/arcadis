@@ -24,6 +24,59 @@
         {
           "contract_data": {
             "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+            "key": {
+              "symbol": "entities"
+            },
+            "durability": "persistent"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+                "key": {
+                  "symbol": "entities"
+                },
+                "durability": "persistent",
+                "val": {
+                  "map": [
+                    {
+                      "key": {
+                        "u32": 0
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "u32": 0
+                          },
+                          {
+                            "u32": 100
+                          },
+                          {
+                            "u32": 200
+                          },
+                          {
+                            "u32": 100
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "ext": "v0"
+          },
+          4095
+        ]
+      ],
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
             "key": "ledger_key_contract_instance",
             "durability": "persistent"
           }
@@ -53,7 +106,7 @@
                               "bool": true
                             },
                             {
-                              "u32": 1
+                              "u32": 0
                             },
                             {
                               "u32": 0
@@ -63,32 +116,18 @@
                       },
                       {
                         "key": {
-                          "symbol": "entity"
+                          "symbol": "dead_cnt"
                         },
                         "val": {
-                          "map": [
-                            {
-                              "key": {
-                                "u32": 0
-                              },
-                              "val": {
-                                "vec": [
-                                  {
-                                    "u32": 0
-                                  },
-                                  {
-                                    "u32": 100
-                                  },
-                                  {
-                                    "u32": 200
-                                  },
-                                  {
-                                    "u32": 100
-                                  }
-                                ]
-                              }
-                            }
-                          ]
+                          "u32": 0
+                        }
+                      },
+                      {
+                        "key": {
+                          "symbol": "ent_cnt"
+                        },
+                        "val": {
+                          "u32": 1
                         }
                       }
                     ]

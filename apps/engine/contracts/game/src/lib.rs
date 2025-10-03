@@ -109,32 +109,51 @@ pub struct GameWorldContract;
 // Contract implementation with game logic
 #[contractimpl]
 impl GameWorldContract {
-    // Initializes the contract with an empty ECS world and contract data
+    /// Initializes the contract with optimized storage schema
+    /// 
+    /// Sets up the contract state using efficient storage patterns:
+    /// - Instance storage for global state and counters
+    /// - Persistent storage preparation for entity data
+    /// - Proper TTL management for ledger efficiency
     pub fn init(env: &Env) -> GameWorldData {
-        let _world = World::new();
         let data = GameWorldData {
             is_initialized: true,
             entity_count: 0,
             dead_entity: 0,
             world_data: World::new(),
         };
+        
+        // Use optimized storage functions
         storage::save_contract_data(env, &data);
+        storage::set_entity_count(env, 0);
+        storage::set_dead_entity_count(env, 0);
+        
         data
     }
 
-    // Spawns a new entity with position and health components
+    /// Spawns a new entity with optimized storage and ECS integration
+    /// 
+    /// Uses efficient storage patterns:
+    /// - Persistent storage for entity data with proper TTL
+    /// - Atomic counter updates for entity management
+    /// - Optimized data serialization for minimal storage footprint
     pub fn spawn_entity(env: &Env, x: u32, y: u32) -> u32 {
-        let mut contract_data = storage::get_contract_data(env);
-        let _world = World::new(); 
-        let position = GamePosition(x, y); 
-        let entity_id = contract_data.entity_count;
-        let health = Health(100); 
-        let entity_data: (u32, u32, u32, u32) = (entity_id, position.0, position.1, health.0); 
-        let val: soroban_sdk::Val = entity_data.into_val(env); 
-        storage::set_entity_data(env, entity_id, val); 
-        contract_data.entity_count += 1; 
-        storage::save_contract_data(env, &contract_data); 
-        entity_id 
+        let entity_count = storage::get_entity_count(env);
+        let entity_id = entity_count;
+        
+        // Create entity components
+        let position = GamePosition(x, y);
+        let health = Health(100);
+        
+        // Store entity data as optimized tuple
+        let entity_data: (u32, u32, u32, u32) = (entity_id, position.0, position.1, health.0);
+        let val: Val = entity_data.into_val(env);
+        
+        // Use optimized storage functions
+        storage::set_entity_data(env, entity_id, val);
+        storage::set_entity_count(env, entity_count + 1);
+        
+        entity_id
     }
 
     
@@ -163,7 +182,6 @@ impl GameWorldContract {
                 if id == entity_id {
                     let current_health = Health(health);
                     let new_health = CombatSystem::update_health(&current_health).0;
-                    let mut contract_data = storage::get_contract_data(env);
 
                     if new_health > 0 {
                         // Just update the entity’s health
@@ -171,18 +189,17 @@ impl GameWorldContract {
                         let val: Val = updated.into_val(env);
                         storage::set_entity_data(env, entity_id, val);
                     } else {
-                        // Entity dies
-                        contract_data.dead_entity += 1;
-
-                        // 🔑 decrement live count
-                        if contract_data.entity_count > 0 {
-                            contract_data.entity_count -= 1;
+                        // Entity dies - increment dead count and decrement live count
+                        let current_dead = storage::get_dead_entity_count(env);
+                        storage::set_dead_entity_count(env, current_dead + 1);
+                        
+                        let current_live = storage::get_entity_count(env);
+                        if current_live > 0 {
+                            storage::set_entity_count(env, current_live - 1);
                         }
 
                         storage::remove_entity_data(env, entity_id);
                     }
-
-                    storage::save_contract_data(env, &contract_data);
                     return true;
                 }
             }
@@ -216,14 +233,12 @@ impl GameWorldContract {
 
     // Returns the total number of entities in the world
     pub fn entity_count(env: &Env) -> u32 {
-        let contract_data = storage::get_contract_data(env); 
-        contract_data.entity_count 
+        storage::get_entity_count(env)
     }
 
     // Returns the total number of dead entities
     pub fn dead_entity_count(env: &Env) -> u32 {
-        let contract_data = storage::get_contract_data(env); 
-        contract_data.dead_entity 
+        storage::get_dead_entity_count(env)
     }
 
     // Removes an entity from the world
@@ -231,12 +246,9 @@ impl GameWorldContract {
         if let Some(entity_data) = storage::get_entity_data(env, entity_id) { 
             if let Ok((id, _, _, _)) = <(u32, u32, u32, u32)>::try_from_val(env, &entity_data) {
                 if id == entity_id {
-                    storage::remove_entity_data(env, entity_id); 
-                    let mut contract_data = storage::get_contract_data(env); 
-                    if contract_data.entity_count > 0 { 
-                        contract_data.entity_count -= 1; 
-                        storage::save_contract_data(env, &contract_data); 
-                    }
+                    storage::remove_entity_data(env, entity_id);
+                    let current_count = storage::get_entity_count(env);
+                    storage::set_entity_count(env, current_count.saturating_sub(1));
                     return true;
                 }
             }
