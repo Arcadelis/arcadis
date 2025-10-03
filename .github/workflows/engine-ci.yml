@@ -27,6 +27,7 @@ jobs:
       - name: Install Rust target for Soroban
         run: |
           source $HOME/.cargo/env
+          rustup target remove wasm32v1-none || true # Remove if it exists, ignore errors
           rustup target add wasm32-unknown-unknown
       - name: Install Stellar CLI with Homebrew
         run: |
@@ -59,6 +60,34 @@ jobs:
     
       - name: Build wasm32
         run: |
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo build --target wasm32-unknown-unknown --release -Zbuild-std
+          else
+            cargo build --target wasm32-unknown-unknown --release
+          fi
+        working-directory: apps/engine
+
+      - name: Build wasm32
+        run: |
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo build --target wasm32-unknown-unknown --release -Zbuild-std
+          else
+            cargo build --target wasm32-unknown-unknown --release
+          fi
+        working-directory: apps/engine
+
+      - name: Build wasm32
+        run: |
+          if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
+            cargo build --target wasm32-unknown-unknown --release -Zbuild-std
+          else
+            cargo build --target wasm32-unknown-unknown --release
+          fi
+        working-directory: apps/engine
+
+      - name: Explicit cargo build for wasm32-unknown-unknown
+        run: |
+          source $HOME/.cargo/env
           if [ "${{ env.NIGHTLY_TOOLCHAIN }}" == "true" ]; then
             cargo build --target wasm32-unknown-unknown --release -Zbuild-std
           else
