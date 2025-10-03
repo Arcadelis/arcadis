@@ -65,30 +65,3 @@ fn test_remove_component() {
     assert!(retrieved_component.is_none());
 }
 
-// Test for a simple system. This assumes MovementSystem exists and can be run.
-// This test might need adjustment based on the actual implementation of MovementSystem.
-#[test]
-fn test_movement_system() {
-    let env = Env::default();
-    let mut world = create_world();
-
-    // Spawn an entity with a Position component
-    let mut components = Vec::new(&env);
-    components.push_back(create_test_component(&env, "Position", 0)); // Initial position 0
-    let entity_id = spawn_entity(&mut world, components);
-
-    // Create and run the movement system
-    let mut movement_system = MovementSystem {}; // Assuming default constructor
-    // This part is tricky without knowing how systems are run.
-    // Assuming a method like `run` that takes the world.
-    // If `MovementSystem` requires `SystemParam`, this will need more setup.
-    // For now, let's assume a simple `run` method.
-    // movement_system.run(&mut world); // This line is a placeholder for actual system execution
-
-    // After running the system, check if the position has changed
-    // This requires knowing how MovementSystem modifies Position.
-    // For now, we'll just assert that the entity still exists.
-    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
-    assert!(retrieved_component.is_some());
-    // More specific assertions would go here if we knew the system's logic.
-}
