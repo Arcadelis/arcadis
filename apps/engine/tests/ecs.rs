@@ -8,7 +8,7 @@ use soroban_ecs::{
     get_component, remove_component, spawn_entity,
     world::World,
 };
-use soroban_sdk::{Env, Symbol, Vec};
+use soroban_sdk::{symbol_short, Env, Symbol, Vec};
 
 // Helper function to create a simple component for testing
 fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
@@ -36,7 +36,8 @@ fn test_spawn_entity_and_add_component() {
     let position_component = create_test_component(&env, "Position", 10);
     add_component(&mut world, entity_id, position_component.clone());
 
-    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
+    let position_symbol = symbol_short!("Position");
+    let retrieved_component = get_component(&world, entity_id, position_symbol);
     assert!(retrieved_component.is_some());
 }
 
@@ -51,9 +52,12 @@ fn test_remove_component() {
     let position_component = create_test_component(&env, "Position", 10);
     add_component(&mut world, entity_id, position_component.clone());
 
-    let removed = remove_component(&mut world, entity_id, Symbol::new(&env, "Position"));
+    let position_symbol = symbol_short!("Position");
+    assert!(get_component(&world, entity_id, position_symbol).is_some());
+
+    let removed = remove_component(&mut world, entity_id, position_symbol);
     assert!(removed);
 
-    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
+    let retrieved_component = get_component(&world, entity_id, position_symbol);
     assert!(retrieved_component.is_none());
 }
