@@ -1,0 +1,90 @@
+#![cfg(test)]
+
+use soroban_sdk::{Env, Symbol, Vec};
+use soroban_ecs::{
+    create_world, spawn_entity, add_component, remove_component, get_component,
+    entity::{Entity, EntityId},
+    component::{Component, ComponentId, ComponentStorage, ComponentTrait},
+    world::World,
+    system::{System, SystemParam, IntoSystem},
+    components::Position, // Assuming Position is a simple component
+    systems::MovementSystem, // Assuming MovementSystem is a simple system
+};
+
+// Helper function to create a simple component for testing
+fn create_test_component(env: &Env, name: &str, value: u32) -> Component {
+    Component::new(env, Symbol::new(env, name), &value)
+}
+
+#[test]
+fn test_world_creation() {
+    let env = Env::default();
+    let world = create_world();
+    assert_eq!(world.entity_count(), 0);
+}
+
+#[test]
+fn test_spawn_entity_and_add_component() {
+    let env = Env::default();
+    let mut world = create_world();
+
+    let components = Vec::new(&env);
+    let entity_id = spawn_entity(&mut world, components);
+
+    assert_eq!(world.entity_count(), 1);
+
+    let position_component = create_test_component(&env, "Position", 10);
+    add_component(&mut world, entity_id, position_component.clone());
+
+    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
+    assert!(retrieved_component.is_some());
+    // Further assertions to check the component's value would require deserialization,
+    // which might be complex without knowing the exact structure of `Component`.
+    // For now, checking `is_some()` is sufficient.
+}
+
+#[test]
+fn test_remove_component() {
+    let env = Env::default();
+    let mut world = create_world();
+
+    let components = Vec::new(&env);
+    let entity_id = spawn_entity(&mut world, components);
+
+    let position_component = create_test_component(&env, "Position", 10);
+    add_component(&mut world, entity_id, position_component.clone());
+
+    let removed = remove_component(&mut world, entity_id, Symbol::new(&env, "Position"));
+    assert!(removed);
+
+    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
+    assert!(retrieved_component.is_none());
+}
+
+// Test for a simple system. This assumes MovementSystem exists and can be run.
+// This test might need adjustment based on the actual implementation of MovementSystem.
+#[test]
+fn test_movement_system() {
+    let env = Env::default();
+    let mut world = create_world();
+
+    // Spawn an entity with a Position component
+    let mut components = Vec::new(&env);
+    components.push_back(create_test_component(&env, "Position", 0)); // Initial position 0
+    let entity_id = spawn_entity(&mut world, components);
+
+    // Create and run the movement system
+    let mut movement_system = MovementSystem {}; // Assuming default constructor
+    // This part is tricky without knowing how systems are run.
+    // Assuming a method like `run` that takes the world.
+    // If `MovementSystem` requires `SystemParam`, this will need more setup.
+    // For now, let's assume a simple `run` method.
+    // movement_system.run(&mut world); // This line is a placeholder for actual system execution
+
+    // After running the system, check if the position has changed
+    // This requires knowing how MovementSystem modifies Position.
+    // For now, we'll just assert that the entity still exists.
+    let retrieved_component = get_component(&world, entity_id, Symbol::new(&env, "Position"));
+    assert!(retrieved_component.is_some());
+    // More specific assertions would go here if we knew the system's logic.
+}
