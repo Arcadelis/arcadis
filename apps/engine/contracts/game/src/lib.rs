@@ -7,100 +7,16 @@ use soroban_ecs::{World, EntityId, Component, ComponentTrait, System, SystemPara
 use soroban_ecs::prelude::*;
 
 mod storage;
+mod components;
+mod systems;
+
 use storage::*;
+pub use components::{Position, Health};
+pub use systems::{MovementSystem, CombatSystem};
 
-// Position component for entities, storing x, y coordinates as u32
-#[contracttype]
-#[derive(Clone)]
-pub struct GamePosition(pub u32, pub u32);
-
-impl ComponentTrait for GamePosition {
-    // Returns the component type identifier
-    fn component_type() -> Symbol {
-        symbol_short!("position")
-    }
-
-    // Serializes position (x, y) to Bytes for storage
-    fn serialize(&self, env: &Env) -> Bytes {
-        let mut bytes = Bytes::new(env);
-        bytes.append(&Bytes::from_slice(env, &self.0.to_be_bytes()));
-        bytes.append(&Bytes::from_slice(env, &self.1.to_be_bytes()));
-        bytes
-    }
-
-    // Deserializes Bytes to GamePosition, expects 8 bytes (two u32s)
-    fn deserialize(env: &Env, data: &Bytes) -> Option<Self> {
-        if data.len() != 8 {
-            return None;
-        }
-        let x = u32::from_be_bytes([
-            data.get(0).unwrap(),
-            data.get(1).unwrap(),
-            data.get(2).unwrap(),
-            data.get(3).unwrap(),
-        ]);
-        let y = u32::from_be_bytes([
-            data.get(4).unwrap(),
-            data.get(5).unwrap(),
-            data.get(6).unwrap(),
-            data.get(7).unwrap(),
-        ]);
-        Some(Self(x, y))
-    }
-}
-
-// Health component for entities, storing health as u32
-#[contracttype]
-#[derive(Clone)]
-pub struct Health(pub u32);
-
-impl ComponentTrait for Health {
-    fn component_type() -> Symbol {
-        symbol_short!("health")
-    }
-
-    fn serialize(&self, env: &Env) -> Bytes {
-        let mut bytes = Bytes::new(env);
-        bytes.append(&Bytes::from_slice(env, &self.0.to_be_bytes()));
-        bytes
-    }
-
-    fn deserialize(env: &Env, data: &Bytes) -> Option<Self> {
-        if data.len() != 4 {
-            return None;
-        }
-        let value = u32::from_be_bytes([
-            data.get(0).unwrap(),
-            data.get(1).unwrap(),
-            data.get(2).unwrap(),
-            data.get(3).unwrap(),
-        ]);
-        Some(Self(value))
-    }
-}
-
-// System for updating entity positions
-pub struct MovementSystem;
-
-impl MovementSystem {
-    // Updates position by adding dx, dy, ensuring non-negative coordinates
-    pub fn update_position(pos: &GamePosition, dx: i32, dy: i32) -> GamePosition {
-        GamePosition(
-            (pos.0 as i32 + dx).max(0) as u32,
-            (pos.1 as i32 + dy).max(0) as u32,
-        )
-    }
-}
-
-// System for updating entity health
-pub struct CombatSystem;
-
-impl CombatSystem {
-    // Reduces health by 10, preventing underflow
-    pub fn update_health(health: &Health) -> Health {
-        Health(health.0.saturating_sub(10))
-    }
-}
+// Re-export Position as GamePosition for backward compatibility
+// This allows existing code to use GamePosition(x, y) syntax
+pub use components::Position as GamePosition;
 
 // GameWorldContract defines the Soroban smart contract
 #[contract]
@@ -141,8 +57,8 @@ impl GameWorldContract {
         let entity_count = storage::get_entity_count(env);
         let entity_id = entity_count;
         
-        // Create entity components
-        let position = GamePosition(x, y);
+        // Create entity components using the modular components
+        let position = Position(x, y);
         let health = Health(100);
         
         // Store entity data as optimized tuple
@@ -158,12 +74,31 @@ impl GameWorldContract {
 
     
 
-    // Moves an entity by dx, dy using MovementSystem
+    /// Moves an entity by dx, dy using MovementSystem
+    ///
+    /// # Arguments
+    ///
+    /// * `env` - The Soroban environment
+    /// * `entity_id` - The ID of the entity to move
+    /// * `dx` - Change in x-coordinate (can be negative)
+    /// * `dy` - Change in y-coordinate (can be negative)
+    ///
+    /// # Returns
+    ///
+    /// `true` if the entity was successfully moved, `false` if entity not found
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// // Move entity 5 units right and 3 units up
+    /// client.move_entity(&entity_id, 5, 3);
+    /// ```
     pub fn move_entity(env: &Env, entity_id: u32, dx: i32, dy: i32) -> bool {
         if let Some(entity_data) = storage::get_entity_data(env, entity_id) { 
             if let Ok((id, x, y, health)) = <(u32, u32, u32, u32)>::try_from_val(env, &entity_data) {
                 if id == entity_id { 
-                    let current_position = GamePosition(x, y); 
+                    let current_position = Position(x, y); 
+                    // Use the MovementSystem to calculate new position
                     let new_position = MovementSystem::update_position(&current_position, dx, dy); 
                     let updated_entity_data: (u32, u32, u32, u32) = (id, new_position.0, new_position.1, health); 
                     let val: soroban_sdk::Val = updated_entity_data.into_val(env);
@@ -175,17 +110,40 @@ impl GameWorldContract {
         false 
     }
 
-    // Attacks an entity, reducing its health or marking it as dead
+    /// Attacks an entity, reducing its health using CombatSystem
+    ///
+    /// # Arguments
+    ///
+    /// * `env` - The Soroban environment
+    /// * `entity_id` - The ID of the entity to attack
+    ///
+    /// # Returns
+    ///
+    /// `true` if the attack was successful, `false` if entity not found
+    ///
+    /// # Behavior
+    ///
+    /// - Applies 10 damage to the entity's health
+    /// - If health reaches 0, the entity is marked as dead and removed
+    /// - Dead entity counter is incremented when an entity dies
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// // Attack an entity
+    /// client.attack_entity(&entity_id);
+    /// ```
     pub fn attack_entity(env: &Env, entity_id: u32) -> bool {
         if let Some(entity_data) = storage::get_entity_data(env, entity_id) {
             if let Ok((id, x, y, health)) = <(u32, u32, u32, u32)>::try_from_val(env, &entity_data) {
                 if id == entity_id {
                     let current_health = Health(health);
-                    let new_health = CombatSystem::update_health(&current_health).0;
+                    // Use the CombatSystem to apply attack damage
+                    let new_health = CombatSystem::attack(&current_health);
 
-                    if new_health > 0 {
-                        // Just update the entity’s health
-                        let updated: (u32, u32, u32, u32) = (id, x, y, new_health);
+                    if new_health.0 > 0 {
+                        // Just update the entity's health
+                        let updated: (u32, u32, u32, u32) = (id, x, y, new_health.0);
                         let val: Val = updated.into_val(env);
                         storage::set_entity_data(env, entity_id, val);
                     } else {
@@ -208,11 +166,11 @@ impl GameWorldContract {
     }
 
     // Retrieves the position of an entity
-    pub fn get_entity_position(env: &Env, entity_id: u32) -> Option<GamePosition> {
+    pub fn get_entity_position(env: &Env, entity_id: u32) -> Option<Position> {
         if let Some(entity_data) = storage::get_entity_data(env, entity_id) { 
             if let Ok((id, x, y, _)) = <(u32, u32, u32, u32)>::try_from_val(env, &entity_data) {
                 if id == entity_id { 
-                    return Some(GamePosition(x, y)); 
+                    return Some(Position(x, y)); 
                 }
             }
         }
